@@ -1,0 +1,53 @@
+# Visible livery brands used for artwork keys (<brand>_<TYPE>).
+# country: used to flag foreign "hero" aircraft (compared with location.home_country).
+# hubs: |-separated IATA codes. Only used as low-confidence route evidence when an operator
+#   flies for several brands (see operator_brands.csv), so list real hubs only.
+brand,name,country,hubs,notes
+delta,Delta Air Lines,United States,,
+delta-connection,Delta Connection,United States,ATL|DTW|MSP|SLC|SEA|LAX|JFK|LGA|BOS,Delta livery with Delta Connection titles
+united,United Airlines,United States,,
+united-express,United Express,United States,ORD|DEN|IAH|EWR|IAD|SFO|LAX,United livery with United Express titles
+american,American Airlines,United States,,
+american-eagle,American Eagle,United States,DFW|CLT|ORD|PHL|PHX|MIA|DCA|LGA|JFK|LAX,American livery with American Eagle titles
+alaska,Alaska Airlines,United States,SEA|PDX|SFO|LAX|ANC,includes Alaska-branded regional jets
+southwest,Southwest Airlines,United States,,
+jetblue,JetBlue,United States,,
+frontier,Frontier Airlines,United States,,tail animals vary by airframe
+spirit,Spirit Airlines,United States,,
+allegiant,Allegiant Air,United States,,
+sun-country,Sun Country Airlines,United States,,
+breeze,Breeze Airways,United States,,
+fedex,FedEx Express,United States,,
+ups,UPS Airlines,United States,,
+netjets,NetJets,United States,,fractional; mostly white with subtle stripes
+flexjet,Flexjet,United States,,fractional
+wheels-up,Wheels Up,United States,,
+atp-flight-school,ATP Flight School,United States,,
+air-canada,Air Canada,Canada,,
+air-canada-express,Air Canada Express,Canada,,
+air-canada-rouge,Air Canada Rouge,Canada,,
+westjet,WestJet,Canada,,
+porter,Porter Airlines,Canada,,
+aeromexico-connect,Aeromexico Connect,Mexico,,
+volaris,Volaris,Mexico,,
+lufthansa,Lufthansa,Germany,,
+british-airways,British Airways,United Kingdom,,
+air-france,Air France,France,,
+klm,KLM,Netherlands,,
+swiss,SWISS,Switzerland,,
+tap-air-portugal,TAP Air Portugal,Portugal,,
+ita-airways,ITA Airways,Italy,,
+iberia,Iberia,Spain,,
+finnair,Finnair,Finland,,
+sas,SAS Scandinavian Airlines,Sweden,,
+turkish-airlines,Turkish Airlines,Turkey,,
+qatar-airways,Qatar Airways,Qatar,,
+emirates,Emirates,United Arab Emirates,,
+etihad,Etihad Airways,United Arab Emirates,,
+royal-jordanian,Royal Jordanian,Jordan,,
+eva-air,EVA Air,Taiwan,,
+ana,All Nippon Airways,Japan,,
+korean-air,Korean Air,South Korea,,
+cathay-pacific,Cathay Pacific,Hong Kong,,
+cargolux,Cargolux,Luxembourg,,
+military,Military,,,assigned from the aircraft DB military flag (any service or country)

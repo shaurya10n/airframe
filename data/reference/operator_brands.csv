@@ -1,0 +1,93 @@
+# Which visible livery brand(s) each operating carrier flies. The operator is the ICAO prefix
+# of the callsign (SKW5501 -> SKW). One row per operator + brand; operators with several rows
+# fly for several brands and need more evidence.
+# owner_patterns: |-separated, case-insensitive substrings of the aircraft DB owner field. A
+#   match ties that airframe to the brand (confidence: registration). Lessor/trustee owners
+#   (e.g. BANK OF UTAH TRUSTEE) never match, so those airframes fall back to inference.
+# An empty brand marks an operator known to fly mixed or unbranded liveries: always unresolved.
+operator_icao,brand,owner_patterns,notes
+DAL,delta,DELTA AIR LINES,
+EDV,delta-connection,DELTA AIR LINES|ENDEAVOR AIR,wholly owned Delta subsidiary
+UAL,united,UNITED AIRLINES,
+ASH,united-express,UNITED AIRLINES|MESA AIRLINES,Mesa
+GJS,united-express,UNITED AIRLINES,GoJet
+UCA,united-express,UNITED AIRLINES|COMMUTEAIR,CommuteAir
+AAL,american,AMERICAN AIRLINES,
+ENY,american-eagle,AMERICAN AIRLINES|ENVOY AIR,wholly owned American subsidiary
+JIA,american-eagle,AMERICAN AIRLINES|PSA AIRLINES,wholly owned American subsidiary
+PDT,american-eagle,AMERICAN AIRLINES|PIEDMONT AIRLINES,wholly owned American subsidiary
+SKW,delta-connection,DELTA AIR LINES,SkyWest flies for several partners
+SKW,united-express,UNITED AIRLINES,
+SKW,american-eagle,AMERICAN AIRLINES,
+SKW,alaska,ALASKA AIRLINES,
+RPA,delta-connection,DELTA AIR LINES,Republic flies for several partners
+RPA,united-express,UNITED AIRLINES,
+RPA,american-eagle,AMERICAN AIRLINES,
+AWI,united-express,UNITED AIRLINES,Air Wisconsin partner has changed; verify current contract
+AWI,american-eagle,AMERICAN AIRLINES,
+ASA,alaska,ALASKA AIRLINES,
+QXE,alaska,ALASKA AIRLINES|HORIZON AIR,Horizon
+SWA,southwest,SOUTHWEST AIRLINES,
+JBU,jetblue,JETBLUE AIRWAYS|JET BLUE,
+FFT,frontier,FRONTIER AIRLINES,
+NKS,spirit,SPIRIT AIRLINES,
+AAY,allegiant,ALLEGIANT AIR,
+SCX,sun-country,SUN COUNTRY,
+MXY,breeze,BREEZE AVIATION,
+FDX,fedex,FEDERAL EXPRESS,
+UPS,ups,UNITED PARCEL SERVICE,
+EJA,netjets,NETJETS,
+LXJ,flexjet,FLEXJET,
+WUP,wheels-up,WHEELS UP,
+CXK,atp-flight-school,CAREER TRACK|CAREER PILOT TRAINING,
+ACA,air-canada,AIR CANADA,
+JZA,air-canada-express,JAZZ AVIATION,Jazz
+ROU,air-canada-rouge,AIR CANADA,
+WJA,westjet,WESTJET,
+POE,porter,PORTER AIRLINES,
+SLI,aeromexico-connect,,
+VOI,volaris,,
+DLH,lufthansa,,
+BAW,british-airways,,
+AFR,air-france,,
+KLM,klm,,
+SWR,swiss,,
+TAP,tap-air-portugal,,
+ITY,ita-airways,,
+IBE,iberia,,
+FIN,finnair,,
+SAS,sas,,
+THY,turkish-airlines,,
+QTR,qatar-airways,,
+UAE,emirates,,
+ETD,etihad,,
+RJA,royal-jordanian,,
+EVA,eva-air,,
+ANA,ana,,
+KAL,korean-air,,
+CPA,cathay-pacific,,
+CLX,cargolux,,
+# Charter, aircraft-management and ACMI/cargo operators flying owners' or customers' liveries.
+ATN,,,flies for Amazon/DHL in customer liveries
+GTI,,,Atlas flies for several customers
+KFS,,,Kalitta charter fleet
+JUS,,,
+RAX,,,
+IFL,,,
+EJM,,,aircraft management
+JRE,,,
+KOW,,,
+NJM,,,
+JTL,,,
+PWA,,,
+TWY,,,
+CNS,,,
+ERY,,,
+FFL,,,
+OKC,,,
+JAS,,,
+XSR,,,
+WWI,,,
+CSJ,,,
+SLH,,,
+NSH,,,

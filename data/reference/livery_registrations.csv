@@ -1,0 +1,6 @@
+# Registration-level livery overrides (confidence: registration). They win over all other
+# evidence, so verify against a recent photo of the airframe before adding a row.
+# Useful for special liveries, multi-brand regional jets (SkyWest, Republic) whose partner
+# can't be derived from the owner field, and corrections.
+# unresolved_registrations_<radius>nm.csv lists the registrations most worth checking.
+registration,brand,source,notes
