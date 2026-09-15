@@ -20,7 +20,6 @@ Delta Connection, United Express and American Eagle aircraft. Evidence, stronges
 
 from __future__ import annotations
 
-import csv
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -29,6 +28,7 @@ from pathlib import Path
 from airframe.analysis import geo
 from airframe.analysis.encounters import Encounter
 from airframe.analysis.routes import RouteLookup
+from airframe.refdata import read_reference_csv
 
 REGISTRATION = "registration"
 INFERRED = "inferred"
@@ -52,15 +52,6 @@ METHOD_LABELS = {
 }
 
 FLIGHT_NUMBER = re.compile(r"^[A-Z]{3}(\d{4})[A-Z]?$")
-
-
-def read_reference_csv(path: Path) -> list[dict[str, str]]:
-    """Read an editable reference CSV, skipping blank lines and ``#`` comments."""
-    with path.open(encoding="utf-8", newline="") as f:
-        lines = [line for line in f if line.strip() and not line.lstrip().startswith("#")]
-    return [
-        {k.strip(): (v or "").strip() for k, v in row.items() if k} for row in csv.DictReader(lines)
-    ]
 
 
 def flight_block(callsign: str) -> str:

@@ -18,7 +18,7 @@ Inky Impression e-ink display.
 3. **Enrich** the chosen aircraft with airline, aircraft type, registration,
    callsign, route (origin → destination), altitude, ground speed, heading,
    distance from home, and current position, where each is available.
-4. **Render** a 1600×1200 poster with Pillow. The poster combines:
+4. **Render** a portrait 1200×1600 poster with Pillow. The poster combines:
    - curated, consistently styled artwork of the aircraft in its livery,
    - a route graphic showing origin, destination, and the aircraft's current
      position along the route,
@@ -91,14 +91,22 @@ The analysis package exists. The other modules are planned and listed here for o
 │   ├── scoring.py           # interestingness score + selection
 │   ├── enrich.py            # airline/type names, route, distance/bearing
 │   ├── artwork.py           # resolve best matching image for airline + type
-│   ├── render/
-│   │   ├── poster.py        # compose the 1600×1200 frame
-│   │   ├── route.py         # origin → destination graphic with current position
-│   │   └── palette.py       # layout constants, fonts, Spectra 6 color handling
+│   ├── models.py            # Sighting / Airport: what the frame shows (implemented)
+│   ├── artwork.py           # pick the image via the fallback hierarchy (implemented)
+│   ├── preview.py           # render sample frames to PNG on a laptop (implemented)
+│   ├── samples.py           # real sample sightings for the preview
+│   ├── render/              # implemented
+│   │   ├── poster.py        # compose the portrait 1200×1600 poster
+│   │   ├── route_map.py     # faint map, great-circle route, aircraft marker
+│   │   ├── aircraft.py      # trim and scale every plane to the same box
+│   │   ├── format.py        # altitude, speed, heading, distance, footer status
+│   │   ├── text.py          # letter-spacing and shrink-to-fit
+│   │   └── theme.py         # canvas, colors, fonts, layout positions
 │   ├── display/
 │   │   ├── base.py          # Display interface: show(image)
-│   │   ├── png.py           # dev: write PNG to output/
-│   │   └── inky.py          # prod: Inky Impression driver (imports `inky` lazily)
+│   │   ├── png.py           # dev: write PNG (+ e-ink simulation) — implemented
+│   │   ├── spectra6.py      # simulate the 6-color panel — implemented
+│   │   └── inky.py          # prod: Inky Impression driver (planned, needs the panel)
 │   └── analysis/            # offline tooling (requires the `analysis` extra) — implemented
 │       ├── __main__.py      # CLI: python -m airframe.analysis / airframe-analyze
 │       ├── config.py        # analysis TOML: location, radii, dates, source
@@ -294,7 +302,30 @@ pip install -e ".[dev]"            # add ,analysis for the offline tooling
 cp config/settings.example.toml config/settings.toml   # once it exists
 ```
 
-In dev, set the display backend to `png`. Rendered frames go to `output/`.
+### Poster preview
+
+```bash
+python -m airframe.preview              # sample frames → output/preview/
+python -m airframe.preview --units aviation   # kt and NM instead of mph and mi
+```
+
+Each sample frame is written twice:
+- `NN-name.png`: what the poster looks like on a normal screen.
+- `NN-name-eink.png`: a simulation of the 6-color Spectra 6 panel, using the palette measured in Pimoroni's driver.
+
+`contact-sheet.png` shows all frames side by side.
+
+The samples cover these states:
+- exact livery with route
+- generic fallback image
+- livery unresolved
+- private aircraft with no route
+- no artwork yet
+- holding an aircraft seen 14 minutes ago
+
+The poster uses IBM Plex Serif and Sans (SIL Open Font License, `assets/fonts/`) and
+simplified Natural Earth land and lakes (public domain, `assets/map/world.json`, built by
+`scripts/build_map_data.py`).
 
 ### Production (Raspberry Pi Zero 2 W)
 
@@ -309,10 +340,11 @@ In dev, set the display backend to `png`. Rendered frames go to `output/`.
 
 - [ ] Config loading and example settings
 - [ ] adsb.lol client and data models
-- [ ] Display interface with PNG and Inky backends
+- [x] Display interface with PNG backend and e-ink simulation
+- [ ] Inky Impression backend (needs the panel)
 - [ ] Scoring and selection (initial heuristics)
 - [ ] Enrichment (reference tables, route lookup, distance and bearing)
-- [ ] Poster renderer and route graphic
+- [x] Poster renderer and route graphic
 - [ ] Artwork style guide and first batch of images
 - [x] Historical ingest and traffic statistics (radius comparison, coverage, rare candidates)
 - [ ] Export rarity weights and artwork shortlist to `data/reference/`

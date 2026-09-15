@@ -26,8 +26,8 @@ import numpy as np
 
 from airframe.analysis.config import ARTWORK_LEVELS, LibraryConfig
 from airframe.analysis.encounters import Encounter
-from airframe.analysis.livery import read_reference_csv
 from airframe.analysis.stats import WIDEBODY_TYPES
+from airframe.refdata import read_reference_csv
 
 GENERIC = "ANY"
 BRAND_LEVELS = ("brand_type", "brand_family")
