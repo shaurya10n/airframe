@@ -25,23 +25,23 @@ pi = [
 ]
 # Offline historical-traffic analysis. Laptop only; never installed on the Pi.
 analysis = [
-    "polars>=1.0",
+    "numpy>=1.26",
 ]
 dev = [
     "pytest>=8.0",
     "ruff>=0.5",
 ]
 
-# Uncomment once src/airframe/__main__.py exists.
-# [project.scripts]
-# airframe = "airframe.__main__:main"
-# airframe-analyze = "airframe.analysis.__main__:main"
+[project.scripts]
+airframe-analyze = "airframe.analysis.__main__:main"
+# airframe = "airframe.__main__:main"  # once the display app exists
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 100

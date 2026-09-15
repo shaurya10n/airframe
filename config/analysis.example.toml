@@ -1,0 +1,106 @@
+# Historical traffic analysis settings.
+# Copy to config/analysis.toml to customize; the CLI uses this file when that one is missing.
+
+[location]
+name = "U-M Central Campus, Ann Arbor"
+lat = 42.2768
+lon = -83.7382
+# Airlines registered elsewhere are flagged as notable artwork candidates.
+home_country = "United States"
+
+[radius]
+primary_nm = 15
+compare_nm = [10, 20]
+
+[dates]
+# UTC days. Default: the N most recent complete days, ending yesterday or at `end`.
+last_n_days = 7
+# end = 2026-09-14
+# An explicit list takes precedence:
+# list = [2026-09-07, 2026-09-08]
+
+[source]
+# "web":    adsb.lol heatmap files over HTTPS (~0.7 GB/day; not every past day is kept)
+# "github": daily adsblol/globe_history release tar (~4 GB/day streamed; complete archive)
+kind = "web"
+concurrency = 4
+# Positions inside this circle are cached per day. It must cover the largest radius and the
+# airport checks below (DTW is ~17.5 NM from campus, plus radius_nm).
+extract_radius_nm = 25
+
+[encounters]
+# Samples of the same aircraft less than this far apart are one encounter.
+gap_minutes = 30
+# Refine closest approach between consecutive samples up to this far apart (heatmaps are 10 s).
+max_segment_gap_seconds = 60
+include_ground = false
+
+[airport_ops]
+# A pass counts as an arrival/departure at an airport if, within window_minutes of it, the
+# aircraft was on the ground or below max_agl_ft within radius_nm of the airport.
+radius_nm = 4
+max_agl_ft = 2500
+window_minutes = 20
+
+[[airports]]
+code = "DTW"  # Detroit Metro, ~17.5 NM ESE
+lat = 42.2124
+lon = -83.3534
+elevation_ft = 645
+
+[[airports]]
+code = "YIP"  # Willow Run, ~9.5 NM E
+lat = 42.2375
+lon = -83.5306
+elevation_ft = 716
+
+[[airports]]
+code = "ARB"  # Ann Arbor Municipal, ~3 NM S
+lat = 42.2231
+lon = -83.7456
+elevation_ft = 839
+
+[livery]
+# Editable reference CSVs: brands.csv, operator_brands.csv, livery_registrations.csv and
+# aircraft_families.csv.
+reference_dir = "data/reference"
+# Low-confidence evidence: look up callsign routes (adsb.lol route database) and match hubs.
+use_routes = true
+# Ignore routes passing farther than this from the location (stale or wrong routes).
+route_max_offset_nm = 75
+# Learn "operator + flight-number block -> brand" rules from owner-confirmed aircraft when at
+# least this many confirmed encounters agree at this purity.
+flight_block_min_support = 10
+flight_block_min_purity = 0.95
+
+[library]
+brand_images_min = 30
+brand_images_max = 50
+generic_images_max = 20
+# Stop adding coverage images once the best adds less than this weighted coverage
+# (brand images continue until brand_images_min).
+min_marginal_share = 0.002
+# Match quality per fallback level, used to rank images by marginal weighted coverage.
+weights = { brand_type = 1.0, brand_family = 0.8, generic_type = 0.5, generic_family = 0.3 }
+# Fallback images always included when observed: GA singles/twins, business jets, military.
+always_include = [
+    "ANY_GA-HIGHWING",
+    "ANY_GA-LOWWING",
+    "ANY_GA-TWIN",
+    "ANY_BIZJET-LIGHT",
+    "ANY_BIZJET-MIDSIZE",
+    "ANY_BIZJET-LARGE",
+    "military_MIL-TRANSPORT",
+    "military_KC135-FAM",
+]
+# Hero images: widebody, foreign or military aircraft seen on at least this many days.
+hero_min_days = 3
+hero_max = 15
+
+[report]
+top_n = 25
+coverage_levels = [10, 20, 30, 50, 75, 100]
+# Rare/interesting candidates come from combinations ranked below this.
+rare_outside_top = 50
+# Types making up at most this share of encounters are also labeled "rare type".
+rare_type_share = 0.005
