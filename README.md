@@ -62,8 +62,8 @@ Design principles:
 - **One process, one loop.** A systemd service runs poll → select → render →
   display on a timer. There's no web server, database, or message queue.
 - **Few dependencies at runtime.** Pillow and requests, plus `inky` on the Pi.
-  Config uses the stdlib `tomllib`. Heavy data tooling (polars) is an optional
-  extra that's never installed on the Pi.
+  Config uses the stdlib `tomllib`. Data tooling (numpy) is an optional extra
+  that's never installed on the Pi.
 - **Don't redraw for nothing.** Only re-render and refresh the panel when the
   selected aircraft changes. This saves the panel and the CPU.
 - **Precompute offline, look up at runtime.** Rarity weights and airline and
@@ -76,13 +76,13 @@ Design principles:
 
 ## Repository layout
 
-Planned modules are listed here for orientation. None of them exist yet.
+The analysis package exists. The other modules are planned and listed here for orientation.
 
 ```
 .
 ├── pyproject.toml
 ├── README.md
-├── config/                  # settings.example.toml (committed), settings.toml (local, gitignored)
+├── config/                  # *.example.toml (committed); local copies without .example are gitignored
 ├── src/airframe/
 │   ├── __main__.py          # entry point: run loop / run once
 │   ├── config.py            # load + validate TOML config
@@ -99,16 +99,24 @@ Planned modules are listed here for orientation. None of them exist yet.
 │   │   ├── base.py          # Display interface: show(image)
 │   │   ├── png.py           # dev: write PNG to output/
 │   │   └── inky.py          # prod: Inky Impression driver (imports `inky` lazily)
-│   └── analysis/            # offline tooling (requires the `analysis` extra)
-│       ├── ingest.py        # read adsb.lol historical dumps, filter to local area
-│       ├── stats.py         # frequency tables, coverage curves
-│       └── export.py        # write rarity weights / artwork shortlist to data/reference/
+│   └── analysis/            # offline tooling (requires the `analysis` extra) — implemented
+│       ├── __main__.py      # CLI: python -m airframe.analysis / airframe-analyze
+│       ├── config.py        # analysis TOML: location, radii, dates, source
+│       ├── sources.py       # fetch heatmaps (adsb.lol web or GitHub release tar), cache regional extract
+│       ├── heatmap.py       # decode readsb heatmap binary format, geographic filter
+│       ├── reference.py     # aircraft DB (reg/type) + airline designators
+│       ├── livery.py        # visible livery brand + confidence per encounter
+│       ├── routes.py        # callsign route lookups (low-confidence livery evidence)
+│       ├── artwork.py       # fallback hierarchy, recommended library, split-half check
+│       ├── encounters.py    # dedupe passes, closest approach, enrichment
+│       ├── stats.py         # top types/airlines/combos, coverage, rare candidates
+│       └── report.py        # CSVs + report.md
 ├── assets/
 │   ├── aircraft/            # curated final artwork (see naming below)
 │   ├── fonts/               # bundled fonts (check licenses)
 │   └── prompts/             # style guide + generation prompts for consistent artwork
 ├── data/
-│   └── reference/           # committed small lookup tables (airlines, types, rarity weights)
+│   └── reference/           # committed, editable CSVs: brands, operator/registration→brand, families
 │                            # everything else in data/ is gitignored (history dumps, caches)
 ├── deploy/                  # systemd unit, Pi install notes
 ├── scripts/                 # one-off helpers (e.g. fetch historical data, preview render)
@@ -143,34 +151,135 @@ Artwork is AI-generated and curated by hand so the whole library looks like one
 consistent series. Keep the style guide and prompts in `assets/prompts/` so new
 pieces match the existing ones.
 
-Proposed file naming in `assets/aircraft/`, using ICAO codes:
+File names in `assets/aircraft/` follow the fallback hierarchy. The frame shows the
+first image that exists:
 
 ```
-<AIRLINE_ICAO>_<TYPE_ICAO>.png   # exact livery, e.g. UAL_B39M.png
-ANY_<TYPE_ICAO>.png              # generic livery for a type, e.g. ANY_A320.png
+<brand>_<TYPE>.png      # 1. brand + exact subtype   delta-connection_CRJ9.png
+<brand>_<FAMILY>.png    # 2. brand + family          delta-connection_CRJ-FAM.png
+ANY_<TYPE>.png          # 3. generic subtype         ANY_C172.png
+ANY_<FAMILY>.png        # 4. generic family          ANY_GA-HIGHWING.png
 ```
 
-The renderer tries a specific livery first, then the generic type, then a
-family-level fallback. Store finals already sized for the poster layout so the
+Brands are visible liveries, so the brand is `delta-connection`, not `SKW`. They're
+defined in [data/reference/brands.csv](data/reference/brands.csv). Families come from
+[data/reference/aircraft_families.csv](data/reference/aircraft_families.csv). The
+offline analysis recommends which images to create first. Store finals already sized for the poster layout so the
 Pi never resizes large source images.
 
 ---
 
 ## Offline analysis
 
-This runs on a laptop with `pip install -e ".[analysis]"`. Its goal is to turn
-historical traffic near the configured location into decisions:
+This runs on a laptop only. It turns historical traffic near the configured location
+into decisions about artwork and radius:
 
-| Question | Output |
-|----------|--------|
-| Which aircraft types or families appear most often? | frequency table |
-| Which airlines appear most often? | frequency table |
-| Which airline + type combinations appear most often? | ranked list of artwork candidates |
-| What share of nearby traffic do the top 20, 50, or 100 combinations cover? | coverage curve, used to plan the artwork budget |
-| Which uncommon aircraft deserve a high interestingness score? | rarity weights, exported to `data/reference/` |
+```bash
+pip install -e ".[analysis]"
+python -m airframe.analysis                     # last 7 complete UTC days, config/analysis.example.toml
+python -m airframe.analysis --days 14
+python -m airframe.analysis --dates 2026-09-01,2026-09-02 --source github
+```
 
-Count unique aircraft per day (by ICAO hex) rather than raw position reports.
-Otherwise slow or loitering aircraft would dominate the counts.
+Settings live in [config/analysis.example.toml](config/analysis.example.toml). To change
+them, copy it to `config/analysis.toml`, which is gitignored and used automatically. The
+defaults are:
+- center point: U-M Central Campus (42.2768, -83.7382)
+- primary radius: 15 NM, compared against 10 and 20 NM
+- airports checked: DTW, YIP and ARB
+
+Output goes to `data/analysis/<first-date>_<last-date>/`. It contains `report.md` and
+these CSVs:
+
+| File | Contents |
+|------|----------|
+| `radius_comparison.csv`, `radius_rings.csv` | 10/15/20 NM side by side, and what each ring adds (including the DTW arrival/departure share) |
+| `encounters_<r>nm.csv` | one row per deduplicated encounter: hex, callsign, registration, type, airline, operator, entered/closest time, closest distance, altitude at closest approach, airport ops |
+| `top_types_`, `top_airlines_`, `top_combinations_<r>nm.csv` | ranked frequency tables |
+| `artwork_coverage_<r>nm.csv` | share of encounters covered by the top 10/20/30/50/75/100 combinations |
+| `rare_interesting_<r>nm.csv` | notable combinations below the coverage set, with reasons |
+| `top_brands_`, `livery_confidence_`, `livery_methods_`, `unresolved_registrations_<r>nm.csv` | visible livery brands, confidence shares, evidence used, and the unresolved registrations most worth checking |
+| `artwork_library.csv`, `artwork_level_coverage.csv` | recommended starting library (ranked by marginal coverage) and coverage at each fallback level per radius |
+| `livery_flight_blocks.csv` | flight-number blocks learned from owner-confirmed aircraft |
+
+### How the historical data is accessed
+
+adsb.lol publishes each UTC day as a GitHub release (`adsblol/globe_history_YYYY`). A
+release is a ~3.5–4 GB tar of per-aircraft trace files, plus 48 half-hour **heatmap**
+files. It has no geographic index. The options, measured in September 2026:
+
+| Approach | Transfer per day | Verdict |
+|----------|------------------|---------|
+| Release tar, parse every trace file | ~4 GB, plus gunzip and JSON-parse of every aircraft seen worldwide | Slowest. There's no way to skip aircraft that never came near Ann Arbor. |
+| Per-aircraft trace URLs | small per file | Needs the list of nearby aircraft first, then one request per aircraft. |
+| **Heatmap files from adsb.lol** (default, `web`) | 48 × 12–18 MB ≈ 0.7 GB | **Chosen.** Each file is a 10-second position snapshot of every aircraft, in fixed 16-byte records. numpy filters a file to the 25 NM circle in about 12 ms. |
+| Heatmaps from the release tar (`github`) | ~4 GB, streamed without saving to disk | Fallback for days the website no longer serves. Heatmaps are the last tar members, so the whole tar has to be read. |
+
+Each day is reduced to the positions and callsigns inside `extract_radius_nm` (25 NM)
+and cached in `data/cache/heatmap_extracts/`. Re-runs and radius changes don't
+re-download anything.
+
+### Method
+
+- **Encounter:** one airborne pass of one aircraft through a radius. Samples of the same
+  hex less than 30 minutes apart merge into one encounter, so loitering or pattern work
+  counts once.
+- **Closest approach and altitude:** taken from the samples and from the closest point on
+  the straight segment between consecutive 10-second samples, which interpolates between
+  them.
+- **Registration, type and owner/operator:** from the
+  [tar1090-db](https://github.com/wiedehopf/tar1090-db) aircraft database, the same one
+  readsb uses. Its military and "interesting" flags feed the rare list.
+- **Airline:** the 3-letter ICAO designator at the start of the callsign (e.g. `SKW5501`),
+  looked up in readsb's operator list. Non-airline callsigns such as `N12345` have no
+  airline. This is the *operating carrier*. The livery is estimated separately (below).
+- **Airport ops:** within 20 minutes of the pass, the aircraft was on the ground or below
+  2,500 ft AGL within 4 NM of the airport. This is how DTW arrivals and departures are
+  measured per radius and per ring.
+
+### Livery brands
+
+Regional operators fly partner liveries. SkyWest and Republic fly Delta Connection, United
+Express and American Eagle aircraft, so each encounter gets an estimated visible brand
+and a confidence level:
+
+| Confidence | Evidence |
+|------------|----------|
+| `registration` | Tied to the airframe: an entry in `livery_registrations.csv`, the aircraft DB military flag, or a registered owner that matches one of the operator's brands (`owner_patterns` in `operator_brands.csv`; e.g. a Delta-owned CRJ-900 flown by SkyWest). |
+| `inferred` | From the flight: an operator that flies for one brand only; a flight-number block (e.g. `RPA5xxx`) flown only by owner-confirmed aircraft of one brand in the same run; a callsign route (adsb.lol route DB) that touches exactly one candidate brand's hub and passes within 75 NM; or other flights of the same registration. |
+| `unresolved` | No evidence, conflicting evidence, a mixed-livery charter operator, or no airline callsign. Nothing is guessed. |
+
+The mappings live in editable CSVs in `data/reference/`: `brands.csv`,
+`operator_brands.csv`, `livery_registrations.csv` and `aircraft_families.csv`. Lines
+starting with `#` are comments. The report lists the most common unresolved
+registrations. Verify them from photos and add them to `livery_registrations.csv` to
+upgrade them to `registration` confidence.
+
+### Recommended artwork library
+
+The library is built from primary-radius traffic in three parts:
+1. **Coverage images, added greedily by marginal weighted coverage.** Each encounter
+   scores the weight of its best match: brand + subtype 1.0, brand + family 0.8,
+   generic subtype 0.5, generic family 0.3. An image that upgrades encounters from a
+   generic fallback to their real livery still counts as progress. Picks continue until
+   the gain drops below 0.2%, with 30–50 brand images and at most 20 generic ones.
+2. **Required fallbacks:** GA singles and twins, business jets and military.
+3. **Hero images:** widebody, foreign or military aircraft seen on at least 3 days.
+
+The report shows coverage at each fallback level for every radius. It also runs a
+split-half check: libraries built from alternating days are compared to show how much a
+single week's conclusions can be trusted. Weights and limits are in the `[library]`
+section of the config.
+
+### Known limitations
+
+- Livery brands are estimates. `inferred` brands can be wrong when an operator
+  reassigns aircraft between partners or reshuffles flight numbers.
+- Special or retro liveries aren't detected unless added to `livery_registrations.csv`.
+- The aircraft DB reflects today's registry, not the registry on the analyzed dates.
+- Coverage depends on adsb.lol's volunteer feeders. Low-altitude traffic far from any
+  feeder can be missed.
+- Heatmap altitude is barometric, in 25 ft steps.
 
 ---
 
@@ -205,6 +314,6 @@ In dev, set the display backend to `png`. Rendered frames go to `output/`.
 - [ ] Enrichment (reference tables, route lookup, distance and bearing)
 - [ ] Poster renderer and route graphic
 - [ ] Artwork style guide and first batch of images
-- [ ] Historical ingest and traffic statistics
-- [ ] Export rarity weights and artwork shortlist
+- [x] Historical ingest and traffic statistics (radius comparison, coverage, rare candidates)
+- [ ] Export rarity weights and artwork shortlist to `data/reference/`
 - [ ] systemd deployment on the Pi
