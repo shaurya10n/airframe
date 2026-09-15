@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "airframe"
+version = "0.1.0"
+description = "Framed aviation wall art: shows an interesting nearby aircraft on a Pimoroni Inky Impression 13.3\" e-ink display."
+readme = "README.md"
+# Raspberry Pi OS Bookworm ships Python 3.11; tomllib (stdlib) is used for config.
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Shaurya", email = "shauryan@umich.edu" }]
+
+# Runtime deps are kept deliberately small for the Pi Zero 2 W (512 MB RAM).
+dependencies = [
+    "Pillow>=10.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+# Production display driver. Install only on the Raspberry Pi.
+pi = [
+    "inky[rpi]>=2.0",
+]
+# Offline historical-traffic analysis. Laptop only; never installed on the Pi.
+analysis = [
+    "polars>=1.0",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+# Uncomment once src/airframe/__main__.py exists.
+# [project.scripts]
+# airframe = "airframe.__main__:main"
+# airframe-analyze = "airframe.analysis.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]

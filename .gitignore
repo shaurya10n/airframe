@@ -1,0 +1,44 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Tooling caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# --- Local configuration (commit config/*.example.toml instead) ---
+config/*.toml
+!config/*.example.toml
+.env
+
+# --- Rendered frames (dev PNG output) ---
+output/
+
+# --- Data: downloaded historical dumps, caches, analysis results ---
+# Small, curated reference tables in data/reference/ are committed.
+data/*
+!data/reference/
+
+# --- Artwork work-in-progress (only curated finals in assets/aircraft/ are committed) ---
+assets/aircraft/_drafts/
+assets/aircraft/_raw/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
