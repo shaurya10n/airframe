@@ -2,10 +2,10 @@
 
 Images live in ``assets/aircraft/<key>.png``. The most specific existing key wins:
 
-1. ``<brand>_<TYPE>``    e.g. ``united_B39M``
-2. ``<brand>_<FAMILY>``  e.g. ``united_737MAX``
-3. ``ANY_<TYPE>``        e.g. ``ANY_C172``
-4. ``ANY_<FAMILY>``      e.g. ``ANY_GA-HIGHWING``
+1. ``<brand>_<TYPE>``    e.g. ``united_B39M``       (level ``brand_type``)
+2. ``<brand>_<FAMILY>``  e.g. ``united_737MAX``     (level ``brand_family``)
+3. ``ANY_<TYPE>``        e.g. ``ANY_C172``          (level ``generic_type``)
+4. ``ANY_<FAMILY>``      e.g. ``ANY_GA-HIGHWING``   (level ``generic_family``)
 """
 
 from __future__ import annotations
@@ -17,17 +17,22 @@ from airframe.refdata import load_families
 GENERIC = "ANY"
 
 
-def candidate_keys(brand: str, type_code: str, family: str) -> list[str]:
+def candidates(brand: str, type_code: str, family: str) -> list[tuple[str, str]]:
+    """(key, level) pairs, most specific first."""
     keys = []
     if brand and type_code:
-        keys.append(f"{brand}_{type_code}")
+        keys.append((f"{brand}_{type_code}", "brand_type"))
     if brand and family:
-        keys.append(f"{brand}_{family}")
+        keys.append((f"{brand}_{family}", "brand_family"))
     if type_code:
-        keys.append(f"{GENERIC}_{type_code}")
+        keys.append((f"{GENERIC}_{type_code}", "generic_type"))
     if family:
-        keys.append(f"{GENERIC}_{family}")
+        keys.append((f"{GENERIC}_{family}", "generic_family"))
     return keys
+
+
+def candidate_keys(brand: str, type_code: str, family: str) -> list[str]:
+    return [key for key, _ in candidates(brand, type_code, family)]
 
 
 class ArtworkLibrary:
@@ -40,8 +45,12 @@ class ArtworkLibrary:
     def family(self, type_code: str) -> str:
         return self._families.get(type_code.upper(), "")
 
-    def resolve(self, brand: str, type_code: str) -> Path | None:
-        for key in candidate_keys(brand, type_code, self.family(type_code)):
+    def match(self, brand: str, type_code: str) -> tuple[Path | None, str]:
+        """Best image and its level, or (None, "")."""
+        for key, level in candidates(brand, type_code, self.family(type_code)):
             if key in self._images:
-                return self._images[key]
-        return None
+                return self._images[key], level
+        return None, ""
+
+    def resolve(self, brand: str, type_code: str) -> Path | None:
+        return self.match(brand, type_code)[0]

@@ -1,4 +1,4 @@
-"""Estimate the visible livery brand of each encounter, with a confidence level.
+"""Estimate the visible livery brand of an aircraft, with a confidence level.
 
 The operating carrier from the callsign isn't the livery: SkyWest, Republic and others fly
 Delta Connection, United Express and American Eagle aircraft. Evidence, strongest first:
@@ -11,24 +11,27 @@ Delta Connection, United Express and American Eagle aircraft. Evidence, stronges
 2. ``inferred``: evidence from the flight rather than the airframe
    * the operator flies for exactly one brand
    * the flight-number block (e.g. SKW3xxx) is flown only by owner-confirmed aircraft of one
-     brand in this run
+     brand (learned by the offline analysis)
    * the callsign's route touches a hub of exactly one of the operator's brands and plausibly
      passes near the location
-   * other flights of the same registration were inferred to a single brand
+   * other flights of the same registration were inferred to a single brand (analysis)
 3. ``unresolved``: no evidence, or conflicting evidence. Never guessed.
+
+Used by both the frame and the offline analysis.
 """
 
 from __future__ import annotations
 
 import re
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Protocol
 
-from airframe.analysis import geo
-from airframe.analysis.encounters import Encounter
-from airframe.analysis.routes import RouteLookup
+from airframe import geo
 from airframe.refdata import read_reference_csv
+from airframe.routes import RouteLookup
 
 REGISTRATION = "registration"
 INFERRED = "inferred"
@@ -52,6 +55,14 @@ METHOD_LABELS = {
 }
 
 FLIGHT_NUMBER = re.compile(r"^[A-Z]{3}(\d{4})[A-Z]?$")
+
+
+class AircraftFacts(Protocol):
+    registration: str
+    military: bool
+    operator: str  # registered owner/operator from the aircraft DB
+    airline_icao: str
+    callsign: str
 
 
 def flight_block(callsign: str) -> str:
@@ -147,10 +158,11 @@ class LiveryResolver:
         self._conflicts: dict[str, set[str]] = {}
         self.flight_blocks: list[dict] = []  # learned block statistics, for the report
 
-    def learn(self, encounters: list[Encounter]) -> None:
-        """Learn flight-number blocks and per-registration consensus from a set of encounters."""
+    def learn(self, aircraft: Iterable[AircraftFacts]) -> None:
+        """Learn flight-number blocks and per-registration consensus from many sightings."""
+        aircraft = list(aircraft)
         votes: dict[tuple[str, str], Counter] = defaultdict(Counter)
-        for e in encounters:
+        for e in aircraft:
             block = flight_block(e.callsign)
             if block and len(self._options.get(e.airline_icao, ())) > 1:
                 airframe = self._airframe(e)
@@ -177,10 +189,10 @@ class LiveryResolver:
             )
 
         if self._routes is not None:
-            self._routes.prefetch(e.callsign for e in encounters if self._needs_route(e))
+            self._routes.prefetch(e.callsign for e in aircraft if self.needs_route(e))
 
         brands_by_registration: dict[str, set[str]] = defaultdict(set)
-        for e in encounters:
+        for e in aircraft:
             if e.registration and self._airframe(e) is None:
                 flight = self._flight(e)
                 if flight:
@@ -190,7 +202,7 @@ class LiveryResolver:
         }
         self._conflicts = {reg: b for reg, b in brands_by_registration.items() if len(b) > 1}
 
-    def resolve(self, e: Encounter) -> Resolution:
+    def resolve(self, e: AircraftFacts) -> Resolution:
         airframe = self._airframe(e)
         if airframe:
             return airframe
@@ -229,7 +241,7 @@ class LiveryResolver:
             f"{op} flies for {', '.join(options)}; no distinguishing evidence",
         )
 
-    def fields(self, e: Encounter) -> dict[str, str]:
+    def fields(self, e: AircraftFacts) -> dict[str, str]:
         """Encounter fields for ``dataclasses.replace``."""
         r = self.resolve(e)
         brand = self.tables.brands.get(r.brand)
@@ -242,7 +254,15 @@ class LiveryResolver:
             "brand_basis": r.basis,
         }
 
-    def _airframe(self, e: Encounter) -> Resolution | None:
+    def needs_route(self, e: AircraftFacts) -> bool:
+        """Whether a route lookup could still decide this aircraft's brand."""
+        return (
+            len(self._options.get(e.airline_icao, ())) > 1
+            and self._airframe(e) is None
+            and (e.airline_icao, flight_block(e.callsign)) not in self._blocks
+        )
+
+    def _airframe(self, e: AircraftFacts) -> Resolution | None:
         if e.registration and (brand := self.tables.registrations.get(e.registration.upper())):
             return Resolution(
                 brand,
@@ -269,7 +289,7 @@ class LiveryResolver:
                 )
         return None
 
-    def _flight(self, e: Encounter) -> Resolution | None:
+    def _flight(self, e: AircraftFacts) -> Resolution | None:
         options = self._options.get(e.airline_icao, [])
         if len(options) == 1:
             return Resolution(
@@ -290,14 +310,7 @@ class LiveryResolver:
             )
         return self._route_brand(e, options)
 
-    def _needs_route(self, e: Encounter) -> bool:
-        return (
-            len(self._options.get(e.airline_icao, ())) > 1
-            and self._airframe(e) is None
-            and (e.airline_icao, flight_block(e.callsign)) not in self._blocks
-        )
-
-    def _route_brand(self, e: Encounter, options: list[str]) -> Resolution | None:
+    def _route_brand(self, e: AircraftFacts, options: list[str]) -> Resolution | None:
         if self._routes is None:
             return None
         airports = self._routes.get(e.callsign)

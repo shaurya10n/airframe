@@ -17,6 +17,7 @@ import numpy as np
 
 from airframe.analysis import geo, heatmap, reference
 from airframe.analysis.config import Airport
+from airframe.operators import Operator, airline_code
 
 CALLSIGN_MAX_GAP_S = 30 * 60
 
@@ -175,7 +176,7 @@ def enrich(
     passes: list[Pass],
     callsigns: CallsignIndex,
     aircraft: dict[str, reference.Aircraft],
-    operators: dict[str, reference.Operator],
+    operators: dict[str, Operator],
     airport_ops: AirportOps,
     airport_window_s: float,
 ) -> list[Encounter]:
@@ -185,7 +186,7 @@ def enrich(
         hex_code = heatmap.addr_to_hex(p.addr)
         info = aircraft.get(hex_code, unknown)
         callsign = callsigns.nearest(p.addr, p.closest_time)
-        code = reference.airline_code(callsign, operators)
+        code = airline_code(callsign, operators)
         airline = operators.get(code)
         encounters.append(
             Encounter(

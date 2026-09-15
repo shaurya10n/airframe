@@ -9,17 +9,11 @@ from statistics import median
 
 from airframe.analysis.config import AnalysisConfig
 from airframe.analysis.encounters import Encounter
-from airframe.analysis.livery import CONFIDENCES, REGISTRATION, UNRESOLVED
+from airframe.livery import CONFIDENCES, REGISTRATION, UNRESOLVED
+from airframe.scoring import WIDEBODY_TYPES
 
 GENERIC = "ANY"
 VINTAGE_MAX_YEAR = 1955
-WIDEBODY_TYPES = frozenset(
-    """
-    A306 A30B A310 A332 A333 A338 A339 A342 A343 A345 A346 A359 A35K A388 A3ST A124 A225
-    B741 B742 B743 B744 B748 B74S B762 B763 B764 B772 B77L B773 B77W B778 B779 B788 B789
-    B78X BLCF BSCA C5M C17 DC10 E3TF E6 IL76 IL96 K35R KC10 KC46 L101 MD11 VC25
-    """.split()
-)
 
 
 @dataclass
@@ -315,6 +309,19 @@ def ring_breakdown(
         summary = summarize(ring, [], airport_codes, days)
         rows.append({"ring": f"{inner:g}-{result.radius_nm:g} NM", **summary})
         inner = result.radius_nm
+    return rows
+
+
+def traffic_frequency(encounters: list[Encounter], days: float) -> list[dict]:
+    """Sightings per day by brand + type ("combo") and by type, for the frame's scoring."""
+    rows = []
+    keys = (
+        ("combo", lambda e: f"{e.brand}_{e.type_code}" if e.brand and e.type_code else None),
+        ("type", lambda e: e.type_code or None),
+    )
+    for kind, key in keys:
+        for value, group in _group(encounters, key):
+            rows.append({"kind": kind, "key": value, "per_day": round(len(group) / days, 3)})
     return rows
 
 

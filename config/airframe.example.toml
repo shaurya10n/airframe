@@ -1,0 +1,38 @@
+# Frame settings. Copy to config/airframe.toml to customize; the app uses this file when
+# that one is missing. Relative paths are relative to the repository root.
+
+[location]
+name = "Ann Arbor"
+lat = 42.2768
+lon = -83.7382
+timezone = "America/Detroit"
+# Airlines from other countries count as more interesting.
+home_country = "United States"
+
+[traffic]
+radius_nm = 15
+# When nothing is within radius_nm, look this far before holding the last aircraft.
+fallback_radius_nm = 20
+refresh_seconds = 180
+# Keep an aircraft on the frame at least this long while it's still in range.
+min_display_seconds = 180
+# Don't bring back an aircraft that was just replaced, unless nothing else is around.
+repeat_cooldown_minutes = 30
+api_url = "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}"
+
+[scoring]
+# score = interestingness * rarity/notability + proximity * closeness + artwork * image match
+interestingness = 55
+proximity = 30
+artwork = 15
+
+[display]
+backend = "png"  # "png" writes output/frame.png; "inky" drives the panel (not implemented yet)
+path = "output/frame.png"
+eink_preview = true  # also write frame-eink.png, a Spectra 6 simulation
+units = "imperial"  # or "aviation" (kt, NM)
+
+[paths]
+reference_dir = "data/reference"
+assets_dir = "assets"
+cache_dir = "data/cache"

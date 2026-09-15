@@ -34,7 +34,7 @@ dev = [
 
 [project.scripts]
 airframe-analyze = "airframe.analysis.__main__:main"
-# airframe = "airframe.__main__:main"  # once the display app exists
+airframe = "airframe.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

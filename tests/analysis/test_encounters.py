@@ -5,6 +5,7 @@ import pytest
 
 from airframe.analysis import encounters, geo, heatmap, reference
 from airframe.analysis.config import Airport
+from airframe.operators import Operator, airline_code
 
 LAT0, LON0 = 42.2768, -83.7382
 T0 = 1_789_257_600
@@ -71,7 +72,7 @@ def test_enrich_adds_callsign_airline_aircraft_and_airport_ops():
                 "N607LR", "CRJ9", "BOMBARDIER CRJ-900", 2008, "DELTA AIR LINES INC"
             )
         },
-        {"EDV": reference.Operator("Endeavor Air", "United States")},
+        {"EDV": Operator("Endeavor Air", "United States")},
         encounters.AirportOps(positions, (DTW,), radius_nm=4, max_agl_ft=2500),
         airport_window_s=1200,
     )
@@ -94,8 +95,8 @@ def test_callsign_lookup_respects_max_gap():
 
 
 def test_airline_code_requires_known_designator_and_flight_number():
-    ops = {"DAL": reference.Operator("Delta Air Lines", "United States")}
-    assert reference.airline_code("DAL1234", ops) == "DAL"
-    assert reference.airline_code("N393FR", ops) == ""
-    assert reference.airline_code("DALTON", ops) == ""
-    assert reference.airline_code("XXX123", ops) == ""
+    ops = {"DAL": Operator("Delta Air Lines", "United States")}
+    assert airline_code("DAL1234", ops) == "DAL"
+    assert airline_code("N393FR", ops) == ""
+    assert airline_code("DALTON", ops) == ""
+    assert airline_code("XXX123", ops) == ""

@@ -1,9 +1,8 @@
 """Callsign -> route lookups from adsb.lol's route database (VRS standing data), cached on disk.
 
-The database maps a callsign to its current scheduled route. It says nothing about the
-analyzed dates and is sometimes stale, so routes are only ever used as low-confidence
-evidence, and only when the route plausibly passes near the analysis location.
-Delete ``data/cache/routes.json`` to refresh.
+The database maps a callsign to its current scheduled route. It says nothing about when an
+aircraft was seen and is sometimes stale, so routes are only trusted when they plausibly
+pass near the frame's location. Delete ``data/cache/routes.json`` to refresh.
 """
 
 from __future__ import annotations
@@ -29,6 +28,7 @@ class RouteAirport:
     icao: str
     lat: float
     lon: float
+    city: str = ""
 
 
 class RouteLookup:
@@ -74,6 +74,7 @@ class RouteLookup:
                     "icao": a.get("icao") or "",
                     "lat": float(a["lat"]),
                     "lon": float(a["lon"]),
+                    "city": a.get("location") or "",
                 }
                 for a in resp.json().get("_airports") or []
             ]

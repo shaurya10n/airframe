@@ -32,7 +32,7 @@ def test_footer_status_switches_to_last_seen():
         "Over Ann Arbor · 2:33 PM"
     )
     assert (
-        format.seen(seen, seen + timedelta(minutes=14), "Ann Arbor", TZ) == "Last seen 14 min ago"
+        format.seen(seen, seen + timedelta(minutes=14), "Ann Arbor", TZ) == "Last seen at 2:33 PM"
     )
     assert format.seen(seen, seen + timedelta(hours=2), "Ann Arbor", TZ) == "Last seen at 2:33 PM"
 

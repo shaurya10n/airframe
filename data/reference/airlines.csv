@@ -1,0 +1,62 @@
+# Airline display names, and IATA codes used to turn callsigns into flight numbers
+# (DAL1234 -> DL1234). Leave iata blank when callsign numbers don't match marketed flight
+# numbers (most regional and charter operators); the frame then shows the callsign.
+icao,iata,name
+AAL,AA,American Airlines
+AAY,G4,Allegiant Air
+ACA,AC,Air Canada
+AFR,AF,Air France
+ANA,NH,All Nippon Airways
+ASA,AS,Alaska Airlines
+BAW,BA,British Airways
+CLX,CV,Cargolux
+CPA,CX,Cathay Pacific
+DAL,DL,Delta Air Lines
+DLH,LH,Lufthansa
+ETD,EY,Etihad Airways
+EVA,BR,EVA Air
+FDX,FX,FedEx Express
+FFT,F9,Frontier Airlines
+FIN,AY,Finnair
+IBE,IB,Iberia
+ITY,AZ,ITA Airways
+JBU,B6,JetBlue
+KAL,KE,Korean Air
+KLM,KL,KLM
+MXY,MX,Breeze Airways
+NKS,NK,Spirit Airlines
+POE,PD,Porter Airlines
+QTR,QR,Qatar Airways
+RJA,RJ,Royal Jordanian
+ROU,RV,Air Canada Rouge
+SAS,SK,SAS Scandinavian Airlines
+SCX,SY,Sun Country Airlines
+SWA,WN,Southwest Airlines
+SWR,LX,SWISS
+TAP,TP,TAP Air Portugal
+THY,TK,Turkish Airlines
+UAE,EK,Emirates
+UAL,UA,United Airlines
+UPS,5X,UPS Airlines
+VOI,Y4,Volaris
+WJA,WS,WestJet
+# Regional, fractional, charter and government operators: names only.
+ASH,,Mesa Airlines
+AWI,,Air Wisconsin
+CXK,,ATP Flight School
+EDV,,Endeavor Air
+EJA,,NetJets
+ENY,,Envoy Air
+GJS,,GoJet Airlines
+JIA,,PSA Airlines
+JZA,,Jazz Aviation
+KFS,,Kalitta Charters
+LXJ,,Flexjet
+PDT,,Piedmont Airlines
+QXE,,Horizon Air
+RCH,,Air Mobility Command
+RPA,,Republic Airways
+SKW,,SkyWest Airlines
+SLI,,Aeroméxico Connect
+UCA,,CommuteAir
+WUP,,Wheels Up

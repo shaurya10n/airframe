@@ -50,11 +50,10 @@ def clock(moment: datetime, tz: ZoneInfo) -> str:
     return moment.astimezone(tz).strftime("%I:%M %p").lstrip("0")
 
 
-def seen(seen_at: datetime, now: datetime, place: str, tz: ZoneInfo, fresh_minutes: int = 5) -> str:
-    """Footer status: live location, or how long ago a held aircraft was seen."""
-    minutes = (now - seen_at).total_seconds() / 60
-    if minutes < fresh_minutes:
+def seen(
+    seen_at: datetime, now: datetime, place: str, tz: ZoneInfo, fresh_minutes: float = 2
+) -> str:
+    """Footer status: live location, or when a held aircraft was last seen."""
+    if (now - seen_at).total_seconds() / 60 < fresh_minutes:
         return f"Over {place} · {clock(seen_at, tz)}"
-    if minutes < 60:
-        return f"Last seen {round(minutes)} min ago"
     return f"Last seen at {clock(seen_at, tz)}"

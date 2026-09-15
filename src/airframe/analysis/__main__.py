@@ -10,18 +10,19 @@ from pathlib import Path
 
 import numpy as np
 
+from airframe import livery
 from airframe.analysis import (
     artwork,
     config,
     encounters,
     heatmap,
-    livery,
     reference,
     report,
     sources,
     stats,
 )
-from airframe.analysis.routes import RouteLookup
+from airframe.operators import load_operators
+from airframe.routes import RouteLookup
 
 log = logging.getLogger("airframe.analysis")
 
@@ -84,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
     ref_dir = cfg.data_dir / "cache" / "reference"
     hexes = {heatmap.addr_to_hex(int(a)) for a in np.unique(positions["addr"])}
     aircraft = reference.load_aircraft(ref_dir, hexes, session)
-    operators = reference.load_operators(ref_dir, session)
+    operators = load_operators(ref_dir, session)
 
     airport_ops = encounters.AirportOps(
         positions, cfg.airports, cfg.airport_radius_nm, cfg.airport_max_agl_ft

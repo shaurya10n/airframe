@@ -10,8 +10,8 @@ from pathlib import Path
 from airframe.analysis import artwork, stats
 from airframe.analysis.config import ARTWORK_LEVELS, AnalysisConfig
 from airframe.analysis.encounters import Encounter
-from airframe.analysis.livery import METHOD_LABELS, LiveryResolver
 from airframe.analysis.sources import SLOTS_PER_DAY, DayExtract
+from airframe.livery import METHOD_LABELS, LiveryResolver
 
 ENCOUNTER_FIELDS = [
     "hex",
@@ -88,6 +88,9 @@ def write(
     _write_csv(out_dir / "artwork_library.csv", [asdict(item) for item in library])
     _write_csv(out_dir / "artwork_level_coverage.csv", levels)
     _write_csv(out_dir / "livery_flight_blocks.csv", resolver.flight_blocks)
+    for r in results:
+        rows = stats.traffic_frequency(r.encounters, days)
+        _write_csv(out_dir / f"traffic_frequency_{r.radius_nm:g}nm.csv", rows)
 
     primary = next(r for r in results if r.radius_nm == cfg.primary_radius_nm)
     sections = [

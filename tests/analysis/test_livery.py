@@ -3,9 +3,10 @@ from pathlib import Path
 
 import pytest
 
-from airframe.analysis import artwork, geo, livery
+from airframe import geo, livery
+from airframe.analysis import artwork
 from airframe.analysis.encounters import Encounter
-from airframe.analysis.routes import RouteAirport
+from airframe.routes import RouteAirport
 
 REFERENCE_DIR = Path(__file__).resolve().parents[2] / "data" / "reference"
 LAT0, LON0 = 42.2768, -83.7382

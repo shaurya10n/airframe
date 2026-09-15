@@ -84,16 +84,21 @@ The analysis package exists. The other modules are planned and listed here for o
 ├── README.md
 ├── config/                  # *.example.toml (committed); local copies without .example are gitignored
 ├── src/airframe/
-│   ├── __main__.py          # entry point: run loop / run once
-│   ├── config.py            # load + validate TOML config
-│   ├── adsb.py              # adsb.lol client (nearby aircraft, route lookup)
-│   ├── models.py            # small dataclasses: Aircraft, Route, Airport
-│   ├── scoring.py           # interestingness score + selection
-│   ├── enrich.py            # airline/type names, route, distance/bearing
-│   ├── artwork.py           # resolve best matching image for airline + type
-│   ├── models.py            # Sighting / Airport: what the frame shows (implemented)
-│   ├── artwork.py           # pick the image via the fallback hierarchy (implemented)
-│   ├── preview.py           # render sample frames to PNG on a laptop (implemented)
+│   ├── __main__.py          # run the frame: python -m airframe [--once]
+│   ├── app.py               # poll, choose, redraw only when the aircraft changes
+│   ├── config.py            # frame TOML: location, radius, refresh, weights
+│   ├── adsb.py              # adsb.lol live API client
+│   ├── aircraft_db.py       # registration/type/owner by hex (SQLite built from tar1090-db)
+│   ├── operators.py         # ICAO airline designators (which callsigns are airlines)
+│   ├── routes.py            # callsign -> scheduled route lookups, cached
+│   ├── livery.py            # visible livery brand + confidence (shared with the analysis)
+│   ├── names.py             # airline and aircraft display names, IATA flight numbers
+│   ├── enrich.py            # contacts -> scored candidates -> the Sighting on the frame
+│   ├── scoring.py           # interestingness + proximity + artwork match
+│   ├── models.py            # Sighting / Airport: what the frame shows
+│   ├── artwork.py           # pick the image via the fallback hierarchy
+│   ├── geo.py, http.py, refdata.py, paths.py   # small shared helpers
+│   ├── preview.py           # render sample frames to PNG on a laptop
 │   ├── samples.py           # real sample sightings for the preview
 │   ├── render/              # implemented
 │   │   ├── poster.py        # compose the portrait 1200×1600 poster
@@ -299,8 +304,35 @@ section of the config.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"            # add ,analysis for the offline tooling
-cp config/settings.example.toml config/settings.toml   # once it exists
+cp config/airframe.example.toml config/airframe.toml   # optional: edit location, radius, weights
 ```
+
+### Run the frame
+
+```bash
+python -m airframe --once -v   # one update, with candidate scores
+python -m airframe             # keep running (every 3 minutes)
+```
+
+The frame is written to `output/frame.png` (plus `frame-eink.png`). On the first run it
+downloads the aircraft database and indexes it into SQLite in `data/cache/`.
+
+Each update:
+1. Fetches airborne aircraft within `radius_nm` of the location, widening to
+   `fallback_radius_nm` if nothing is in range.
+2. Scores each one: `55 × interestingness + 30 × proximity + 15 × artwork match`.
+   - **interestingness:** 60% rarity (from `traffic_frequency.csv`) and 40% notability
+     (military, flagged interesting, widebody, foreign airline).
+   - **proximity:** slant distance, so a jet at 37,000 ft overhead counts as further away
+     than a Cessna at 3,000 ft.
+   - **artwork match:** exact livery 1.0, brand + family 0.8, generic type 0.5, family 0.3.
+3. Keeps the current aircraft for at least `min_display_seconds`, and doesn't repeat one
+   within `repeat_cooldown_minutes` unless nothing else is around.
+4. Holds the last aircraft when nothing is in range: the frame is redrawn once, with the
+   footer reading "Last seen at …", then left alone.
+
+The display is only redrawn when the chosen aircraft changes, since e-ink refreshes are slow
+and flash.
 
 ### Poster preview
 
@@ -338,14 +370,14 @@ simplified Natural Earth land and lakes (public domain, `assets/map/world.json`,
 
 ## Roadmap
 
-- [ ] Config loading and example settings
-- [ ] adsb.lol client and data models
+- [x] Config loading and example settings
+- [x] adsb.lol client and data models
 - [x] Display interface with PNG backend and e-ink simulation
 - [ ] Inky Impression backend (needs the panel)
-- [ ] Scoring and selection (initial heuristics)
-- [ ] Enrichment (reference tables, route lookup, distance and bearing)
+- [x] Scoring and selection (interestingness, proximity, artwork match)
+- [x] Enrichment (livery brand, display names, flight numbers, route leg)
 - [x] Poster renderer and route graphic
-- [ ] Artwork style guide and first batch of images
+- [x] Artwork prompt log and first batch of images
 - [x] Historical ingest and traffic statistics (radius comparison, coverage, rare candidates)
-- [ ] Export rarity weights and artwork shortlist to `data/reference/`
+- [x] Export traffic frequency to `data/reference/` for the frame's scoring
 - [ ] systemd deployment on the Pi
