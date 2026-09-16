@@ -86,9 +86,37 @@ After each batch:
 | 47 | `ANY_A350-FAM` | generic family | Airbus A350-900 | 3 | |
 | 48 | `ANY_GA-TWIN` | generic family | Cessna 310 | 3 | regenerated with an in-family template |
 | 49 | `ANY_TURBOPROP-SINGLE` | generic family | Pilatus PC-12 | 3 | regenerated with an in-family template |
+| 50 | `alaska_B739` | brand + subtype | Boeing 737-900ER | 4 | 74/week |
+| 51 | `jetblue_A321` | brand + subtype | Airbus A321 | 4 | 73/week |
+| 52 | `netjets_C68A` | brand + subtype | Cessna Citation Latitude | 4 | 71/week |
+| 53 | `united_A21N` | brand + subtype | Airbus A321neo | 4 | 68/week |
+| 54 | `alaska_B39M` | brand + subtype | Boeing 737 MAX 9 | 4 | 60/week |
+| 55 | `american-eagle_CRJ7` | brand + subtype | Bombardier CRJ-700 | 4 | 58/week; titles read "American Eagle" |
+| 56 | `delta-connection_E75L` | brand + subtype | Embraer E175 | 4 | 57/week; titles read "Delta Connection" |
+| 57 | `netjets_E55P` | brand + subtype | Embraer Phenom 300 | 4 | 57/week |
+| 58 | `delta_B763` | brand + subtype | Boeing 767-300 | 4 | 54/week |
+| 59 | `united_A319` | brand + subtype | Airbus A319 | 4 | 51/week |
+| 60 | `american_A21N` | brand + subtype | Airbus A321neo | 4 | 47/week |
+| 61 | `united-express_CRJ7` | brand + subtype | Bombardier CRJ-700 | 4 | 47/week; titles read "UNITED EXPRESS" |
+| 62 | `american_A319` | brand + subtype | Airbus A319 | 4 | 45/week |
+| 63 | `jetblue_BCS3` | brand + subtype | Airbus A220-300 | 4 | 44/week |
+| 64 | `united_A320` | brand + subtype | Airbus A320 | 4 | 44/week |
+| 65 | `air-canada_BCS3` | brand + subtype | Airbus A220-300 | 4 | 44/week; only non-US brand in the library |
+| 66 | `delta_A320` | brand + subtype | Airbus A320 | 4 | 41/week |
+| 67 | `flexjet_E545` | brand + subtype | Embraer Praetor 500 / Legacy 450 | 4 | 38/week |
+| 68 | `delta_BCS3` | brand + subtype | Airbus A220-300 | 4 | 36/week |
+| 69 | `delta_B753` | brand + subtype | Boeing 757-300 | 4 | 36/week |
+| 70 | `american_B38M` | brand + subtype | Boeing 737 MAX 8 | 4 | 35/week |
+| 71 | `flexjet_CL35` | brand + subtype | Bombardier Challenger 350 | 4 | 34/week |
+| 72 | `delta-connection_E170` | brand + subtype | Embraer E170 | 4 | 33/week; correctly shorter than the E175 |
+| 73 | `united_B737` | brand + subtype | Boeing 737-700 | 4 | 30/week |
+| 74 | `frontier_A20N` | brand + subtype | Airbus A320neo | 4 | 30/week; photographic animal tail |
+| 75 | `flexjet_E55P` | brand + subtype | Embraer Phenom 300 | 4 | 25/week; same airframe as 57, different livery |
 
-**Coverage with these 49 images** (Ann Arbor, 15 NM, sample week): 89.4% of sightings get an
-image, 36.0% get their exact livery.
+**Coverage with these 75 images** (Ann Arbor, 15 NM, sample week): 89.4% of sightings get an
+image, 50.6% get their exact livery. Batch 4 raised exact livery from 36.0% to 50.6% without
+moving the "any image" number, which is exactly what a batch of exact liveries should do: it
+replaces generic silhouettes on aircraft that were already covered.
 
 ### Lesson from batch 3
 
@@ -107,14 +135,32 @@ Both were then regenerated with an in-family template — a Cessna 310 for the p
 PC-12 for the turboprop single — and both came back correct (entries 48 and 49). The two
 mistakes were kept as `ANY_KINGAIR` and `ANY_C208`, which they fit exactly, so nothing was lost.
 
+### Lesson from batch 4
+
+Two things that went wrong earlier were fixed by saying them out loud in the prompt, and both
+worked on every attempt:
+
+- **Naming the operating brand in the titles.** `american-eagle_CRJ7`, `united-express_CRJ7`
+  and both Delta Connection E-Jets carry the regional brand, not the mainline one, because the
+  prompt said "Make sure the fuselage titles read X, not just Y". Batch 2's
+  `united-express_E75L` had to be regenerated for exactly this.
+- **Naming the subtype to exclude.** The business jets each named the airframe to match *and*
+  the one to avoid ("not a Citation X", "not a different Challenger variant"). All four
+  distinct bizjet airframes came back correct and measurably different from each other.
+
+The corollary to batch 3's lesson: the template drives the shape, but an explicit negative
+("not an E175") is what keeps a near-identical subtype from drifting.
+
 ### Up next (candidates, no prompts yet)
 
-The remaining blanks, measured against the 49-image library: `ANY_BE35` (36 sightings/week),
-`ANY_DH8D` (35), `ANY_F900` (32), `ANY_EC55` (28), `ANY_E120` (18), `ANY_A306` (17),
-`ANY_SF50` (15). The single biggest gap is the 379 sightings/week with no type code at all,
-which no image can fix. After that, batch C: the 26 exact liveries ranked
-24+ in `artwork_library.csv`, starting with `alaska_B739`, `jetblue_A321`, `netjets_C68A`,
-`united_A21N` and `alaska_B39M`.
+The remaining blanks, unchanged by batch 4 since it only replaced generic silhouettes with
+exact liveries: `ANY_BE35` (36 sightings/week), `ANY_DH8D` (35), `ANY_F900` (32), `ANY_EC55`
+(28), `ANY_E120` (18), `ANY_A306` (17), `ANY_SF50` (15). The single biggest gap is the 379
+sightings/week with no type code at all, which no image can fix.
+
+With the planned library complete, the remaining gains are small and scattered: the seven keys
+above are worth about 3% of "any image" combined. The higher-value work now is a second pass on
+exact liveries for brands that still fall back to a family image.
 
 ## Prompt template
 
@@ -505,4 +551,198 @@ Use the uploaded Cessna 310 template as the main reference and keep its exact si
 
 ```text
 Use the uploaded Pilatus PC-12 template as the main reference and keep its exact side-profile geometry. Render it as a generic low-wing single-engine turboprop aircraft in a clean neutral livery, with no branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for aircraft such as the Pilatus PC-12, Daher TBM, Piper PA-46 turboprop variants, and similar low-wing retractable turboprops. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+## Batch 4 prompts (2026-09-16)
+
+The 26 exact liveries. This is the batch called **C** when it was planned; it was generated
+after batch 3 (planned as D), so the log numbering and the planning letters differ from here on.
+
+### 50. `alaska_B739`
+- **Template:** blank Boeing 737-900ER
+
+```text
+Use the uploaded blank Boeing 737-900ER template as the main reference and keep its exact side-profile geometry, including the split-scimitar winglets. Apply the current Alaska Airlines livery accurately using the provided references, including the Alaska wordmark, the signature Eskimo tail artwork, the correct fuselage colors, and the proper engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 51. `jetblue_A321`
+- **Template:** blank Airbus A321
+
+```text
+Use the uploaded blank Airbus A321 template as the main reference and keep its exact side-profile geometry. Apply the current JetBlue livery accurately using the provided references, including the JetBlue wordmark, the correct tail pattern and colors, the fuselage treatment, and the proper engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 52. `netjets_C68A`
+- **Template:** blank Cessna Citation Latitude
+- **Note:** names the subtype explicitly to avoid a Citation X.
+
+```text
+Use an accurate blank Cessna Citation Latitude side-profile template as the main reference and keep its exact side-profile geometry. Be careful to match the Citation Latitude specifically, not a Citation X or another business jet subtype. Apply the current NetJets livery accurately using the provided references, including the correct dark gray and black striping, understated NetJets branding, tail treatment, and overall premium neutral color scheme. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 53. `united_A21N`
+- **Template:** Airbus A321neo
+
+```text
+Use the uploaded Airbus A321neo template as the main reference and keep its exact side-profile geometry. Apply the current United Airlines livery accurately using the provided references, including the United wordmark, blue globe tail, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 54. `alaska_B39M`
+- **Template:** blank Boeing 737 MAX 9
+
+```text
+Use the uploaded blank Boeing 737 MAX 9 template as the main reference and keep its exact side-profile geometry. Apply the current Alaska Airlines livery accurately using the provided references, including the Alaska wordmark, the signature Eskimo tail artwork, the correct fuselage colors, and the proper engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 55. `american-eagle_CRJ7`
+- **Template:** Bombardier CRJ-700
+- **Note:** the explicit titles instruction worked; the fuselage reads "American Eagle".
+
+```text
+Use the uploaded Bombardier CRJ-700 template as the main reference and keep its exact side-profile geometry. Apply the current American Eagle livery accurately using the provided references, including the American Eagle wordmark, red-white-blue tail design, fuselage colors, and correct engine markings. Make sure the fuselage titles read “American Eagle,” not just “American.” Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 56. `delta-connection_E75L`
+- **Template:** Embraer E175
+- **Note:** titles correctly read "Delta Connection".
+
+```text
+Use the uploaded Embraer E175 template as the main reference and keep its exact side-profile geometry, preferably preserving the newer-style winglet shape if shown in the reference. Apply the current Delta Connection livery accurately using the provided references, including the Delta Connection wordmark, tail design, fuselage colors, and correct engine and winglet markings. Make sure the fuselage titles read “Delta Connection,” not just “Delta.” Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 57. `netjets_E55P`
+- **Template:** blank Embraer Phenom 300
+
+```text
+Use an accurate blank Embraer Phenom 300 side-profile template as the main reference and keep its exact side-profile geometry. Be careful to match the Phenom 300 specifically, not a different light business jet subtype. Apply the current NetJets livery accurately using the provided references, including the correct dark gray and black striping, understated NetJets branding, tail treatment, and overall premium neutral color scheme. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 58. `delta_B763`
+- **Template:** Boeing 767-300
+
+```text
+Use the uploaded Boeing 767-300 template as the main reference and keep its exact side-profile geometry. Apply the current Delta Air Lines livery accurately using the provided references, including the Delta wordmark, tail design, fuselage colors, and correct engine markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 59. `united_A319`
+- **Template:** Airbus A319
+
+```text
+Use the uploaded Airbus A319 template as the main reference and keep its exact side-profile geometry. Apply the current United Airlines livery accurately using the provided references, including the United wordmark, blue globe tail, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 60. `american_A21N`
+- **Template:** Airbus A321neo
+
+```text
+Use the uploaded Airbus A321neo template as the main reference and keep its exact side-profile geometry. Apply the current American Airlines livery accurately using the provided references, including the American wordmark, silver-gray fuselage treatment, red-white-blue tail design, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 61. `united-express_CRJ7`
+- **Template:** Bombardier CRJ-700
+- **Note:** titles correctly read "UNITED EXPRESS" — the batch 2 failure did not recur.
+
+```text
+Use the uploaded Bombardier CRJ-700 template as the main reference and keep its exact side-profile geometry. Apply the current United Express livery accurately using the provided references, including the correct United Express titles, blue globe tail, fuselage colors, and correct engine markings. Make sure the fuselage titles read “United Express,” not just “United.” Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 62. `american_A319`
+- **Template:** Airbus A319
+
+```text
+Use the uploaded Airbus A319 template as the main reference and keep its exact side-profile geometry. Apply the current American Airlines livery accurately using the provided references, including the American wordmark, silver-gray fuselage treatment, red-white-blue tail design, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 63. `jetblue_BCS3`
+- **Template:** Airbus A220-300
+
+```text
+Use the uploaded Airbus A220-300 template as the main reference and keep its exact side-profile geometry. Apply the current JetBlue livery accurately using the provided references, including the JetBlue wordmark, the correct tail pattern and colors, the fuselage treatment, and the proper engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 64. `united_A320`
+- **Template:** Airbus A320
+
+```text
+Use the uploaded Airbus A320 template as the main reference and keep its exact side-profile geometry. Apply the current United Airlines livery accurately using the provided references, including the United wordmark, blue globe tail, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 65. `air-canada_BCS3`
+- **Template:** Airbus A220-300
+
+```text
+Use the uploaded Airbus A220-300 template as the main reference and keep its exact side-profile geometry. Apply the current Air Canada livery accurately using the provided references, including the Air Canada wordmark, the black-and-white fuselage treatment, the red maple leaf roundel tail design, and the correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 66. `delta_A320`
+- **Template:** Airbus A320
+
+```text
+Use the uploaded Airbus A320 template as the main reference and keep its exact side-profile geometry. Apply the current Delta Air Lines livery accurately using the provided references, including the Delta wordmark, tail design, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 67. `flexjet_E545`
+- **Template:** blank Embraer Praetor 500 / Legacy 450
+
+```text
+Use an accurate blank Embraer Praetor 500 / Legacy 450 side-profile template as the main reference and keep its exact side-profile geometry. Be careful to match the Praetor 500 / Legacy 450 airframe specifically, not a different Embraer business jet. Apply the current Flexjet livery accurately using the provided references, including the correct Flexjet branding, fuselage striping and color treatment, tail design, and engine markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 68. `delta_BCS3`
+- **Template:** Airbus A220-300
+
+```text
+Use the uploaded Airbus A220-300 template as the main reference and keep its exact side-profile geometry. Apply the current Delta Air Lines livery accurately using the provided references, including the Delta wordmark, tail design, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 69. `delta_B753`
+- **Template:** Boeing 757-300
+
+```text
+Use the uploaded Boeing 757-300 template as the main reference and keep its exact side-profile geometry. Apply the current Delta Air Lines livery accurately using the provided references, including the Delta wordmark, tail design, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 70. `american_B38M`
+- **Template:** Boeing 737 MAX 8
+
+```text
+Use the uploaded Boeing 737 MAX 8 template as the main reference and keep its exact side-profile geometry. Apply the current American Airlines livery accurately using the provided references, including the American wordmark, silver-gray fuselage treatment, red-white-blue tail design, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 71. `flexjet_CL35`
+- **Template:** blank Bombardier Challenger 350
+
+```text
+Use an accurate blank Bombardier Challenger 350 side-profile template as the main reference and keep its exact side-profile geometry. Be careful to match the Challenger 350 specifically, not a different Challenger variant or another large-cabin business jet. Apply the current Flexjet livery accurately using the provided references, including the correct Flexjet branding, fuselage striping and color treatment, tail design, and engine markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 72. `delta-connection_E170`
+- **Template:** Embraer E170
+- **Note:** drawn shorter than entry 56's E175, in the right direction and proportion.
+
+```text
+Use an exact Embraer E170 side-profile template as the main reference and keep its exact side-profile geometry. Do not substitute an E175 or preserve E175 proportions if the uploaded reference is not a true E170. Apply the current Delta Connection livery accurately using the provided references, including the Delta Connection wordmark, tail design, fuselage colors, and correct engine and winglet markings. Make sure the fuselage titles read “Delta Connection,” not just “Delta.” Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 73. `united_B737`
+- **Template:** Boeing 737-700
+
+```text
+Use the uploaded Boeing 737-700 template as the main reference and keep its exact side-profile geometry. Apply the current United Airlines livery accurately using the provided references, including the United wordmark, blue globe tail, fuselage colors, and correct engine and winglet markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 74. `frontier_A20N`
+- **Template:** Airbus A320neo
+- **Note:** the only livery in the library with photographic tail artwork (a mountain lion).
+
+```text
+Use the uploaded Airbus A320neo template as the main reference and keep its exact side-profile geometry. Apply the current Frontier Airlines livery accurately using the provided references, including the large green FRONTIER wordmark, white fuselage, green engine treatment, current wildlife-themed tail artwork, and correct winglet markings. Use a representative current Frontier animal-tail design from the provided references without including a specific registration number. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 75. `flexjet_E55P`
+- **Template:** blank Embraer Phenom 300
+- **Note:** same airframe as entry 57 in a different livery, which is the point of the library.
+
+```text
+Use an accurate blank Embraer Phenom 300 side-profile template as the main reference and keep its exact side-profile geometry. Be careful to match the Phenom 300 specifically, not a different light business jet subtype. Apply the current Flexjet livery accurately using the provided references, including the correct Flexjet branding, fuselage striping and color treatment, tail design, and engine markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
 ```
