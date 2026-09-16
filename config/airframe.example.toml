@@ -22,9 +22,9 @@ api_url = "https://api.adsb.lol/v2/point/{lat}/{lon}/{radius}"
 
 [scoring]
 # score = interestingness * rarity/notability + proximity * closeness + artwork * image match
-interestingness = 55
-proximity = 30
-artwork = 15
+interestingness = 45
+proximity = 20
+artwork = 35
 
 [display]
 backend = "png"  # "png" writes output/frame.png; "inky" drives the panel (not implemented yet)

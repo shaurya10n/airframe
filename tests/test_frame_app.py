@@ -290,5 +290,5 @@ def test_example_config_loads():
     cfg = config.load(config.EXAMPLE_CONFIG)
     assert (cfg.radius_nm, cfg.fallback_radius_nm) == (15, 20)
     assert cfg.refresh_seconds == 180 and cfg.min_display_seconds == 180
-    assert (cfg.weights.interestingness, cfg.weights.proximity, cfg.weights.artwork) == (55, 30, 15)
+    assert (cfg.weights.interestingness, cfg.weights.proximity, cfg.weights.artwork) == (45, 20, 35)
     assert cfg.tz.key == "America/Detroit"

@@ -334,6 +334,20 @@ Each update:
 The display is only redrawn when the chosen aircraft changes, since e-ink refreshes are slow
 and flash.
 
+### Replay past traffic
+
+```bash
+python -m airframe.analysis.replay --switches 100 --frame-seconds 3
+python -m airframe.analysis.replay --start 2026-09-09T09:00 --day-start 6 --day-end 23
+```
+
+Feeds the cached week of positions (`data/cache/heatmap_extracts/`, written by the offline
+analysis) through the same scoring, selection and rendering the live app uses, writing to
+`output/frame.png`. Simulated time advances by the refresh interval; updates that don't
+change the aircraft are processed instantly, so `--frame-seconds` is how long each *new*
+frame stays up. It prints a summary of which artwork levels and aircraft were shown, which
+is the quickest way to judge a scoring change or a new artwork batch.
+
 ### Poster preview
 
 ```bash
