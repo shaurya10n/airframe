@@ -77,18 +77,44 @@ After each batch:
 | 38 | `ANY_DC9-MD80` | generic family | McDonnell Douglas MD-80 | 2 | least used image (20 sightings/week) |
 | 39 | `ANY_DV20` | generic subtype | Diamond DA20 | 2 | regenerated: first attempt was a high-wing Cessna |
 | 40 | `ANY_767-FAM` | generic family | Boeing 767-300 | 2 | |
+| 41 | `ANY_DA40` | generic subtype | Diamond DA40 | 3 | fixed gear |
+| 42 | `ANY_KINGAIR` | generic family | twin-engine light aircraft reference | 3 | prompted as `ANY_GA-TWIN`, but the template was a King Air, so it was renamed to the family it depicts |
+| 43 | `ANY_C208` | generic subtype | single-engine turboprop template | 3 | prompted as `ANY_TURBOPROP-SINGLE`, came back a Caravan, so it was renamed |
+| 44 | `netjets_BIZJET-MIDSIZE` | brand + family | midsize business jet | 3 | first brand + family image; covers the NetJets midsize fleet |
+| 45 | `delta_A330-FAM` | brand + family | Airbus A330-300 | 3 | covers the A330-200, -300 and -900 |
+| 46 | `ANY_777-FAM` | generic family | Boeing 777-300ER | 3 | |
+| 47 | `ANY_A350-FAM` | generic family | Airbus A350-900 | 3 | |
+| 48 | `ANY_GA-TWIN` | generic family | Cessna 310 | 3 | regenerated with an in-family template |
+| 49 | `ANY_TURBOPROP-SINGLE` | generic family | Pilatus PC-12 | 3 | regenerated with an in-family template |
 
-**Coverage with these 40 images** (Ann Arbor, 15 NM, sample week): 83.7% of sightings get an
-image, 36.0% get their exact livery. Across daytime refreshes, something is showable 97.8%
-of the time and an exact-livery aircraft is available 84.9% of the time.
+**Coverage with these 49 images** (Ann Arbor, 15 NM, sample week): 89.4% of sightings get an
+image, 36.0% get their exact livery.
+
+### Lesson from batch 3
+
+Two prompts produced the right *style* but the wrong *aircraft*, both for the same reason:
+**the uploaded template decides the shape, and naming an out-of-family example invites it.**
+
+- `ANY_GA-TWIN` asked for "a generic light twin-engine GA aircraft ... such as the Cessna 310,
+  Beechcraft Baron", but the uploaded reference was a King Air, and the King Air is what came
+  back. The family covers piston twins only.
+- `ANY_TURBOPROP-SINGLE` listed "the Pilatus PC-12, Cessna Caravan" as examples. The Caravan
+  is high-wing and isn't in that family; the model drew the Caravan.
+
+So: upload a template that is already in the family, and name only in-family examples.
+
+Both were then regenerated with an in-family template — a Cessna 310 for the piston twin and a
+PC-12 for the turboprop single — and both came back correct (entries 48 and 49). The two
+mistakes were kept as `ANY_KINGAIR` and `ANY_C208`, which they fit exactly, so nothing was lost.
 
 ### Up next (candidates, no prompts yet)
 
-Biggest remaining blanks, in order: `ANY_DA40` (87 sightings/week), `ANY_TURBOPROP-SINGLE`
-(PC-12, TBM; 38), `ANY_HELI-TWIN` (28), `ANY_KINGAIR` (22), `ANY_DASH8` (Porter),
-`delta_BCS3` (36). After that, liveries ranked 24+ in `artwork_library.csv`: `alaska_B739`,
-`jetblue_A321`, `netjets_C68A`, `united_A21N`, `alaska_B39M`, `american-eagle_CRJ7`,
-`delta-connection_E75L`, `netjets_E55P`.
+The remaining blanks, measured against the 49-image library: `ANY_BE35` (36 sightings/week),
+`ANY_DH8D` (35), `ANY_F900` (32), `ANY_EC55` (28), `ANY_E120` (18), `ANY_A306` (17),
+`ANY_SF50` (15). The single biggest gap is the 379 sightings/week with no type code at all,
+which no image can fix. After that, batch C: the 26 exact liveries ranked
+24+ in `artwork_library.csv`, starting with `alaska_B739`, `jetblue_A321`, `netjets_C68A`,
+`united_A21N` and `alaska_B39M`.
 
 ## Prompt template
 
@@ -401,4 +427,82 @@ Use the uploaded Diamond DA20 template as the main reference and keep its exact 
 
 ```text
 Use the uploaded Boeing 767-300 template as the main reference and keep its exact side-profile geometry. Render it as a generic Boeing 767 family aircraft in a clean neutral livery, with no airline branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for 767-family aircraft. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+## Batch 3 prompts (2026-09-16)
+
+Nine images aimed at the biggest remaining blanks. Two of the first seven came back as a
+different aircraft than the key expects and were renamed to what they actually depict, then
+regenerated from an in-family template as entries 48 and 49 (see the lesson above).
+
+### 41. `ANY_DA40`
+- **Template:** Diamond DA40
+
+```text
+Use the uploaded Diamond DA40 template as the main reference and keep its exact side-profile geometry, including the low-wing layout, T-tail, and fixed landing gear. Render it as a generic Diamond DA40 in a clean neutral livery, with no branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 42. `ANY_KINGAIR`
+- **Template:** twin-engine light aircraft reference (a King Air)
+- **Note:** prompted as `ANY_GA-TWIN`. The uploaded template was a King Air, a cabin-class
+  twin turboprop, so the result was renamed to `ANY_KINGAIR`, which it fits exactly
+  (69 sightings/week). `ANY_GA-TWIN` still needs a piston twin.
+
+```text
+Use the uploaded twin-engine light aircraft reference as the main structural guide and preserve its side-profile geometry. Render it as a generic light twin-engine GA aircraft in a clean neutral livery, with no branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for aircraft such as the Cessna 310, Beechcraft Baron, and similar piston twins. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 43. `ANY_C208`
+- **Template:** single-engine turboprop template (a Caravan)
+- **Note:** prompted as `ANY_TURBOPROP-SINGLE`. Naming the Caravan among the examples got a
+  Caravan, which is high-wing and outside that family, so it was renamed to `ANY_C208`
+  (6 sightings/week). `ANY_TURBOPROP-SINGLE` still needs a PC-12.
+
+```text
+Use the uploaded single-engine turboprop template as the main reference and keep its exact side-profile geometry. Render it as a generic single-engine turboprop aircraft in a clean neutral livery, with no branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for aircraft such as the Pilatus PC-12, Cessna Caravan, and similar utility/business turboprops. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 44. `netjets_BIZJET-MIDSIZE`
+- **Template:** midsize business jet, plus NetJets livery references
+
+```text
+Use the uploaded midsize business jet template as the main reference and keep its exact side-profile geometry. Apply a clean NetJets-style livery using the provided references, including the correct dark gray/black striping, understated branding, and neutral premium color treatment, but do not include a specific registration number. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text beyond the real livery markings. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 45. `delta_A330-FAM`
+- **Template:** Airbus A330-300, plus Delta livery references
+
+```text
+Use the uploaded Airbus A330-300 template as the main reference and keep its exact side-profile geometry. Apply the current Delta Air Lines livery accurately using the provided references, including the Delta wordmark, tail design, fuselage colors, and correct engine markings. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text, and do not include a specific registration number. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 46. `ANY_777-FAM`
+- **Template:** Boeing 777-300ER
+
+```text
+Use the uploaded Boeing 777-300ER template as the main reference and keep its exact side-profile geometry. Render it as a generic Boeing 777 family aircraft in a clean neutral livery, with no airline branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for 777-family aircraft. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 47. `ANY_A350-FAM`
+- **Template:** Airbus A350-900
+
+```text
+Use the uploaded Airbus A350-900 template as the main reference and keep its exact side-profile geometry. Render it as a generic Airbus A350 family aircraft in a clean neutral livery, with no airline branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for A350-family aircraft. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 48. `ANY_GA-TWIN`
+- **Template:** Cessna 310
+- **Note:** regeneration of entry 42. The in-family template and in-family examples fixed it.
+
+```text
+Use the uploaded Cessna 310 template as the main reference and keep its exact side-profile geometry. Render it as a generic light twin-engine piston GA aircraft in a clean neutral livery, with no branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for aircraft such as the Cessna 310/414, Beechcraft Baron, Piper PA-31/PA-34, and similar light piston twins. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
+```
+
+### 49. `ANY_TURBOPROP-SINGLE`
+- **Template:** Pilatus PC-12
+- **Note:** regeneration of entry 43. Naming the PC-12 as the template and dropping the Caravan
+  from the examples fixed it.
+
+```text
+Use the uploaded Pilatus PC-12 template as the main reference and keep its exact side-profile geometry. Render it as a generic low-wing single-engine turboprop aircraft in a clean neutral livery, with no branding and no specific registration number. Keep the paint scheme simple and realistic, using soft whites and light grays with subtle neutral accents so it works well as a fallback image for aircraft such as the Pilatus PC-12, Daher TBM, Piper PA-46 turboprop variants, and similar low-wing retractable turboprops. Render it as a premium printed aviation illustration with a soft papery matte aesthetic — subtle paper texture, muted colors, gentle shading, clean edges, and a calm editorial feel. Keep it optimized for a color e-ink display, avoiding glossy reflections, heavy gradients, and overly fine detail. Show a single isolated aircraft only, centered, facing left-to-right, with landing gear retracted. Do not add scenery, poster elements, or extra text. Prefer a transparent background; if not possible, use a flat warm off-white paper-like background.
 ```
