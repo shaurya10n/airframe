@@ -61,9 +61,10 @@ Design principles:
 
 - **One process, one loop.** A systemd service runs poll → select → render →
   display on a timer. There's no web server, database, or message queue.
-- **Few dependencies at runtime.** Pillow and requests, plus `inky` on the Pi.
-  Config uses the stdlib `tomllib`. Data tooling (numpy) is an optional extra
-  that's never installed on the Pi.
+- **Few dependencies at runtime.** Pillow and requests, plus `inky` on the Pi
+  (which brings numpy, spidev, smbus2 and gpiodevice with it). Config uses the
+  stdlib `tomllib`. The analysis tooling is an extra that's never installed on
+  the Pi.
 - **Don't redraw for nothing.** Only re-render and refresh the panel when the
   selected aircraft changes. This saves the panel and the CPU.
 - **Precompute offline, look up at runtime.** Rarity weights and airline and
@@ -375,10 +376,19 @@ simplified Natural Earth land and lakes (public domain, `assets/map/world.json`,
 
 ### Production (Raspberry Pi Zero 2 W)
 
+Full instructions, including the service user and the buses to enable, are in
+[deploy/README.md](deploy/README.md). In short:
+
 1. Raspberry Pi OS Lite (Bookworm or later), with SPI and I2C enabled via `raspi-config`.
 2. `python3 -m venv .venv && .venv/bin/pip install -e ".[pi]"`
-3. Set the display backend to `inky` in `config/settings.toml`.
-4. Install the systemd unit from `deploy/` (to be added).
+3. In `config/airframe.toml`, set `[display] backend = "inky"` and `rotation` to `90` or
+   `270`. The poster is portrait (1200 × 1600) and the panel is landscape (1600 × 1200), so
+   the frame is rotated on the way out; the rotation is which way up it hangs.
+4. Install [deploy/airframe.service](deploy/airframe.service) and
+   `systemctl enable --now airframe`.
+
+The panel driver is written against `inky` 2.5 and covered by tests with a fake panel, but it
+hasn't yet run on real hardware.
 
 ---
 
@@ -394,4 +404,4 @@ simplified Natural Earth land and lakes (public domain, `assets/map/world.json`,
 - [x] Artwork prompt log and first batch of images
 - [x] Historical ingest and traffic statistics (radius comparison, coverage, rare candidates)
 - [x] Export traffic frequency to `data/reference/` for the frame's scoring
-- [ ] systemd deployment on the Pi
+- [x] systemd deployment on the Pi (unit and install notes in `deploy/`; unverified on hardware)

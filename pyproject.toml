@@ -19,11 +19,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Production display driver. Install only on the Raspberry Pi.
+# Production display driver. Install only on the Raspberry Pi. inky brings numpy, spidev,
+# smbus2 and gpiodevice with it; there is no "rpi" extra as of inky 2.5.
 pi = [
-    "inky[rpi]>=2.0",
+    "inky>=2.5",
 ]
-# Offline historical-traffic analysis. Laptop only; never installed on the Pi.
+# Offline historical-traffic analysis. Laptop only.
 analysis = [
     "numpy>=1.26",
 ]

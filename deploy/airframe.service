@@ -1,0 +1,34 @@
+# Install: see deploy/README.md
+[Unit]
+Description=airframe: nearby aircraft on an Inky Impression
+Documentation=https://github.com/shaurya10n/airframe
+# The first update fetches the aircraft database and adsb.lol, so prefer a network to be up.
+# This is a hint, not a guarantee: the service handles a missing network by restarting.
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=airframe
+# The panel is driven over SPI, and its EEPROM is read over I2C.
+SupplementaryGroups=spi i2c gpio
+WorkingDirectory=/opt/airframe
+ExecStart=/opt/airframe/.venv/bin/python -m airframe
+# A boot that beats DHCP, or an adsb.lol outage during startup, exits before the loop starts.
+# Keep trying, slowly: nothing here is urgent and the panel refresh is measured in seconds.
+Restart=always
+RestartSec=30s
+# Python buffers stdout when it isn't a tty, which delays everything reaching the journal.
+Environment=PYTHONUNBUFFERED=1
+# The loop is not time-critical; leave the cores to whatever else the Pi is doing.
+Nice=10
+
+# It only needs to read the repo and write data/cache and output.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=yes
+ReadWritePaths=/opt/airframe/data /opt/airframe/output
+
+[Install]
+WantedBy=multi-user.target
