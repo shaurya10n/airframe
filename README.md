@@ -178,8 +178,12 @@ ANY_<FAMILY>.png        # 4. generic family          ANY_GA-HIGHWING.png
 Brands are visible liveries, so the brand is `delta-connection`, not `SKW`. They're
 defined in [data/reference/brands.csv](data/reference/brands.csv). Families come from
 [data/reference/aircraft_families.csv](data/reference/aircraft_families.csv). The
-offline analysis recommends which images to create first. Store finals already sized for the poster layout so the
-Pi never resizes large source images.
+offline analysis recommends which images to create first.
+
+Finals are stored already trimmed and sized for the poster's aircraft box, so the Pi never
+scales a multi-megapixel PNG. Run new artwork through
+[scripts/resize_artwork.py](scripts/resize_artwork.py), which does exactly what the renderer
+would have done at render time.
 
 ---
 

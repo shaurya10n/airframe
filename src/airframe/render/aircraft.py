@@ -19,8 +19,14 @@ def _trimmed(path: str) -> Image.Image:
 
 
 def fit(path: Path, box_width: int, box_height: int) -> Image.Image:
-    """Trim transparent margins, then scale to the largest size that fits the box."""
+    """Trim transparent margins, then scale to the largest size that fits the box.
+
+    Artwork is stored already trimmed and sized for the box (``scripts/resize_artwork.py``),
+    so both steps are usually no-ops; they stay here for artwork that hasn't been through it.
+    """
     image = _trimmed(str(path))
     scale = min(box_width / image.width, box_height / image.height)
     size = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))
+    if size == image.size:
+        return image
     return image.resize(size, Image.Resampling.LANCZOS)

@@ -12,9 +12,11 @@ applies a specific or generic livery in the shared house style. Save the result 
 Settled once the poster layout was finalized:
 
 - **Transparent PNG**, one aircraft, side profile, facing left to right.
-- **Fill the canvas edge to edge.** Canvas size and aspect don't matter: the renderer trims
-  to the visible pixels and scales every aircraft into the same box, so all planes end up
-  about the same size on the frame.
+- **Fill the canvas edge to edge.** Canvas size and aspect don't matter while generating:
+  the aircraft is trimmed to its visible pixels and scaled into the same box as every other
+  plane, so they all end up about the same size on the frame. Finals are stored at that
+  size — run `python scripts/resize_artwork.py` over a new batch, which does the trim and
+  scale once so the Pi doesn't do it on every render.
 - **Landing gear:** retracted for airliners and jets; down for fixed-gear GA aircraft
   (Cessna 172/152, DA20, PA-28), where retracted would be wrong.
 - **No registration, no scenery, no text, no poster framing.**
@@ -29,9 +31,11 @@ After each batch:
 
 1. File name matches the artwork key exactly (brand and type/family must both resolve).
 2. RGBA with real transparency, aircraft edge to edge after trimming.
-3. Recompute coverage against the sample week, and confirm every image matches real traffic.
-4. Build a contact sheet and spot-check a few rendered frames.
-5. Eyeball partner-livery titles and any aircraft that could be confused with another type.
+3. `python scripts/resize_artwork.py` run over the new files (it reports "ok" for anything
+   already sized, so it is safe to run over the whole library).
+4. Recompute coverage against the sample week, and confirm every image matches real traffic.
+5. Build a contact sheet and spot-check a few rendered frames.
+6. Eyeball partner-livery titles and any aircraft that could be confused with another type.
 
 ## Status
 
