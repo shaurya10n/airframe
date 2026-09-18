@@ -10,6 +10,7 @@ from pathlib import Path
 from airframe import adsb, aircraft_db, config
 from airframe.app import FrameApp
 from airframe.artwork import ArtworkLibrary
+from airframe.display.base import Display
 from airframe.display.png import PngDisplay
 from airframe.enrich import Enricher
 from airframe.http import make_session
@@ -50,8 +51,6 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def build_app(cfg: config.FrameConfig) -> FrameApp:
-    if cfg.display != "png":
-        raise SystemExit("the inky display backend isn't implemented yet; use backend = 'png'")
     session = make_session()
     ref_cache = cfg.cache_dir / "reference"
     tables = LiveryTables.load(cfg.reference_dir)
@@ -76,8 +75,16 @@ def build_app(cfg: config.FrameConfig) -> FrameApp:
         cfg,
         fetch=lambda radius: adsb.fetch(session, cfg.lat, cfg.lon, radius, cfg.api_url),
         enricher=enricher,
-        display=PngDisplay(cfg.output_path, eink_preview=cfg.eink_preview),
+        display=build_display(cfg),
     )
+
+
+def build_display(cfg: config.FrameConfig) -> Display:
+    if cfg.display == "inky":
+        from airframe.display.inky import InkyDisplay
+
+        return InkyDisplay(rotation=cfg.rotation)
+    return PngDisplay(cfg.output_path, eink_preview=cfg.eink_preview)
 
 
 if __name__ == "__main__":

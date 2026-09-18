@@ -12,6 +12,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from airframe.adsb import API_URL
+from airframe.display.inky import ROTATIONS
 from airframe.paths import REPO_ROOT
 from airframe.render.format import UNITS
 from airframe.scoring import Weights
@@ -38,6 +39,7 @@ class FrameConfig:
     display: str
     output_path: Path
     eink_preview: bool
+    rotation: int
     units: str
     reference_dir: Path
     assets_dir: Path
@@ -82,6 +84,7 @@ def load(path: Path) -> FrameConfig:
         display=display.get("backend", "png"),
         output_path=_path(display.get("path", "output/frame.png")),
         eink_preview=bool(display.get("eink_preview", True)),
+        rotation=int(display.get("rotation", 90)),
         units=display.get("units", "imperial"),
         reference_dir=_path(paths.get("reference_dir", "data/reference")),
         assets_dir=_path(paths.get("assets_dir", "assets")),
@@ -91,6 +94,8 @@ def load(path: Path) -> FrameConfig:
         raise ValueError(f"display.backend must be one of {DISPLAYS}, got {cfg.display!r}")
     if cfg.units not in UNITS:
         raise ValueError(f"display.units must be one of {UNITS}, got {cfg.units!r}")
+    if cfg.rotation not in ROTATIONS:
+        raise ValueError(f"display.rotation must be one of {ROTATIONS}, got {cfg.rotation!r}")
     if min(cfg.weights.interestingness, cfg.weights.proximity, cfg.weights.artwork) < 0:
         raise ValueError("scoring weights must not be negative")
     cfg.tz  # noqa: B018 - fail early on an unknown timezone

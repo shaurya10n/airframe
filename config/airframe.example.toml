@@ -27,9 +27,12 @@ proximity = 20
 artwork = 35
 
 [display]
-backend = "png"  # "png" writes output/frame.png; "inky" drives the panel (not implemented yet)
+backend = "png"  # "png" writes output/frame.png; "inky" drives the panel (see deploy/README.md)
 path = "output/frame.png"
 eink_preview = true  # also write frame-eink.png, a Spectra 6 simulation
+# "inky" only: the poster is portrait and the panel is landscape, so the frame is rotated on
+# the way out. 90 or 270, whichever matches how the frame hangs.
+rotation = 90
 units = "imperial"  # or "aviation" (kt, NM)
 
 [paths]

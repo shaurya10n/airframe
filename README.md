@@ -111,7 +111,7 @@ The analysis package exists. The other modules are planned and listed here for o
 │   │   ├── base.py          # Display interface: show(image)
 │   │   ├── png.py           # dev: write PNG (+ e-ink simulation) — implemented
 │   │   ├── spectra6.py      # simulate the 6-color panel — implemented
-│   │   └── inky.py          # prod: Inky Impression driver (planned, needs the panel)
+│   │   └── inky.py          # prod: Inky Impression driver (untested on the panel)
 │   └── analysis/            # offline tooling (requires the `analysis` extra) — implemented
 │       ├── __main__.py      # CLI: python -m airframe.analysis / airframe-analyze
 │       ├── config.py        # analysis TOML: location, radii, dates, source
@@ -387,7 +387,7 @@ simplified Natural Earth land and lakes (public domain, `assets/map/world.json`,
 - [x] Config loading and example settings
 - [x] adsb.lol client and data models
 - [x] Display interface with PNG backend and e-ink simulation
-- [ ] Inky Impression backend (needs the panel)
+- [x] Inky Impression backend (written and tested against a fake panel; unverified on hardware)
 - [x] Scoring and selection (interestingness, proximity, artwork match)
 - [x] Enrichment (livery brand, display names, flight numbers, route leg)
 - [x] Poster renderer and route graphic
